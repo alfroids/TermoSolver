@@ -28,7 +28,10 @@ def compute_pattern_matrix() -> NDArray[np.int_]:
     if os.path.exists(PATTERN_MATRIX_PATH):
         mtx: NDArray[np.int_] = np.load(PATTERN_MATRIX_PATH)
 
-        assert mtx.shape == (N_WORDS, N_WORDS)
+        assert mtx.shape == (
+            N_WORDS,
+            N_WORDS,
+        ), "The size of the given pattern matrix is different from the word list."
 
     else:
         mtx: NDArray[np.int_] = np.zeros((N_WORDS, N_WORDS), dtype=np.int_)
@@ -234,7 +237,12 @@ def main() -> None:
 
 if __name__ == "__main__":
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        prog="python termo.py", description="Entropy-based Wordle-like solver"
+        prog="python termo.py",
+        description="Entropy-based Wordle-like solver."
+        + "\nWhen prompted, input your guess by either choosing one of the suggestions"
+        + " or typing a word.\nAfter that, input the result for each game by typing"
+        + ' "-" for misses (black), "+" for correct letter (yellow)'
+        + ' and "=" for correct position (green).',
     )
 
     parser.add_argument(
@@ -248,7 +256,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-P",
         "--pattern-matrix",
-        help="Path where the pattern matirx will be stored to or loaded from.",
+        help="Path where the pattern matirx will be stored to or loaded from."
+        + " If not given, the pattern matrix will be recomputed each time.",
         metavar="PATTERN_MATRIX_PATH",
         default="",
     )
@@ -299,7 +308,8 @@ if __name__ == "__main__":
         "-v",
         "--verbose",
         help="Output information level."
-        + " Either 0, 1 (adds entropy values to guesses) or 2 (shows execution times).",
+        + " Either 0, 1 (shows entropy values for each guesses)"
+        + " or 2 (shows execution times).",
         action="count",
         default=0,
     )
