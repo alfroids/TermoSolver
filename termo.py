@@ -242,7 +242,9 @@ if __name__ == "__main__":
         + "\nWhen prompted, input your guess by either choosing one of the suggestions"
         + " or typing a word.\nAfter that, input the result for each game by typing"
         + ' "-" for misses (black), "+" for correct letter (yellow)'
-        + ' and "=" for correct position (green).',
+        + ' and "=" for correct position (green). An asterisk after a suggestion'
+        + " means that that word is not a possible solution for any of the games,"
+        + " but it's still suggested because it will provide a lot of information.",
     )
 
     parser.add_argument(
