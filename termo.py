@@ -2,6 +2,7 @@ import argparse
 import os
 from itertools import product
 from time import time
+from typing import Callable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -11,15 +12,19 @@ from unidecode import unidecode
 # WORD LIST FUNCTIONS
 def get_patterns() -> NDArray[np.str_]:
     return np.sort(
-        np.array(["".join(p) for p in product("=+-", repeat=WORD_SIZE)], dtype=np.str_)
+        np.array(["".join(p) for p in product("=+-", repeat=WORD_SIZE)], dtype=str)
     )
 
 
 def get_word_list() -> NDArray[np.str_]:
-    words = np.loadtxt(WORD_LIST_PATH, dtype=np.str_)
-    words = np.unique(np.strings.lower(words))
-    words = words[np.strings.isalpha(words)]
+    unidecode_vec: Callable = np.vectorize(unidecode)
+
+    words: NDArray[np.str_] = np.loadtxt(WORD_LIST_PATH, dtype=str)
+    words = unidecode_vec(words)
     words = words[np.strings.str_len(words) == WORD_SIZE]
+    words = words[np.strings.isalpha(words)]
+    words = np.strings.lower(words)
+    words = np.unique(words)
 
     return words
 
@@ -28,13 +33,14 @@ def compute_pattern_matrix() -> NDArray[np.int_]:
     if os.path.exists(PATTERN_MATRIX_PATH):
         mtx: NDArray[np.int_] = np.load(PATTERN_MATRIX_PATH)
 
-        assert mtx.shape == (
-            N_WORDS,
-            N_WORDS,
-        ), "The size of the given pattern matrix is different from the word list."
+        assert mtx.shape == (N_WORDS, N_WORDS), (
+            f"The size of the given pattern matrix {mtx.shape}"
+            + f" doesn't the word list ({N_WORDS}). Delete the file to"
+            + " recompute the pattern matrix."
+        )
 
     else:
-        mtx: NDArray[np.int_] = np.zeros((N_WORDS, N_WORDS), dtype=np.int_)
+        mtx: NDArray[np.int_] = np.zeros((N_WORDS, N_WORDS), dtype=int)
 
         try:
             from tqdm import tqdm
