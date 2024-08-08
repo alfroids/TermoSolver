@@ -85,7 +85,8 @@ def compute_pattern(guess: str, correct: str) -> str:
 
     pattern = "".join(plist)
 
-    assert pattern in PATTERNS
+    i: int = int(np.searchsorted(PATTERNS, pattern))
+    assert PATTERNS[i] == pattern
 
     return pattern
 
